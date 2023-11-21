@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// solhint-disable comprehensive-interface
 pragma solidity 0.8.18;
 
-import "forge-std/Vm.sol";
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "./Const.sol";
 
-contract Utils is Test {
+contract Utils is Test, Const {
     uint8 public constant CheckTopic1 = 0x1;
     uint8 public constant CheckTopic2 = 0x2;
     uint8 public constant CheckTopic3 = 0x4;
     uint8 public constant CheckData = 0x8;
     uint8 public constant CheckAll = 0xf;
 
+    /* solhint-disable comprehensive-interface */
     function expectEmit() public {
         expectEmit(CheckAll);
     }
@@ -26,6 +26,31 @@ contract Utils is Test {
         bool checkData = (checks & (mask << 3)) > 0;
 
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
+    }
+
+    function assertBytesEq(bytes memory a, bytes memory b) public {
+        if (keccak256(a) != keccak256(b)) {
+            emit log("Error: a == b not satisfied [bytes]");
+            emit log_named_bytes("  Expected", b);
+            emit log_named_bytes("    Actual", a);
+            fail();
+        }
+    }
+
+    function assertUintArrayEq(uint256[] memory a, uint256[] memory b) public {
+        require(a.length == b.length, "LENGTH_MISMATCH");
+
+        for (uint256 i = 0; i < a.length; i++) {
+            assertEq(a[i], b[i]);
+        }
+    }
+
+    function min3(uint256 a, uint256 b, uint256 c) public pure returns (uint256) {
+        return a > b ? (b > c ? c : b) : (a > c ? c : a);
+    }
+
+    function min2(uint256 a, uint256 b) public pure returns (uint256) {
+        return a > b ? b : a;
     }
 
     function array(uint256 a) public pure returns (uint256[] memory) {
@@ -46,6 +71,12 @@ contract Utils is Test {
         return arr;
     }
 
+    function array(bool a) public pure returns (bool[] memory) {
+        bool[] memory arr = new bool[](1);
+        arr[0] = a;
+        return arr;
+    }
+
     function array(uint256 a, uint256 b) public pure returns (uint256[] memory) {
         uint256[] memory arr = new uint256[](2);
         arr[0] = a;
@@ -62,6 +93,13 @@ contract Utils is Test {
 
     function array(bytes32 a, bytes32 b) public pure returns (bytes32[] memory) {
         bytes32[] memory arr = new bytes32[](2);
+        arr[0] = a;
+        arr[1] = b;
+        return arr;
+    }
+
+    function array(bool a, bool b) public pure returns (bool[] memory) {
+        bool[] memory arr = new bool[](2);
         arr[0] = a;
         arr[1] = b;
         return arr;

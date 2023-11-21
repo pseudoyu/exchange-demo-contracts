@@ -6,7 +6,7 @@
     "check-send-result": "error",
     "code-complexity": ["error", 5],
     "compiler-version": ["error", ">=0.8.0"],
-    "comprehensive-interface": "error",
+    "comprehensive-interface": "warn",
     "const-name-snakecase": "off",
     "constructor-syntax": "error",
     "contract-name-camelcase": "error",
